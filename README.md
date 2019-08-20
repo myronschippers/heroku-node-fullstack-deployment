@@ -21,6 +21,7 @@ The walkthrough that follows assumes you have already setup your Heroku account 
 
 The following alterations need to be made to your codebase in order to deploy to Heroku. Please make sure you have these in place before following any of the rest of the deployment notes.
 
+
 ### Accepting Heroku PORT
 
 Make sure your PORT is configured correctly. This should be in your node server application kickoff file. In most cases it's a `server.js` file.
@@ -31,58 +32,10 @@ Make sure your PORT is configured correctly. This should be in your node server 
 const PORT = process.env.PORT || 5000;
 ```
 
+Ensure these updates are committed to the repository.
 
 
-## Heroku Setup
-
-Run the following commands from within your project folder.
-
-1. In terminal, navigate to your project folder and type `heroku create`
-2. Login in if prompted -- it might ask to open a browser
-3. Type `git remote -v` to ensure it added successfully
-    * You should see a heroku remote along with your origin remote
-
-Heroku will run by default `npm run build` and then `npm run start` in order to kick off your application. We have to make sure that both scripts are working as expected before deploying our code to Heroku. If you do not have a `build` script in place Heroku will not attempt to run it.
-
-## Heroku Deployment: Server and Client Deployment
-
-Commit your changes and push them to Heroku `master`:
-
-```
-git add .
-git commit -m "MESSAGE"
-git push heroku master
-```
-
-   > Note: You'll need to commit and push each time you make a change that you want to deploy to Heroku. **Keep in mind you CAN NOT pull from Heroku. This is not a replacement for GitHub!**
-
-Lastly, open terminal and type `heroku open` as a shortcut to open your website in a browser.
-
-   > Note: It is best to fully test your code locally before deploying to Heroku. Bugs are much harder to troubleshoot on a live website.
-
-## Heroku Deployment: Database
-
-Our website is now live! However... we also have a database, so how do we get that deployed?
-
-### Postgresql on Heroku
-
-1. Create a **postgresql** database on Heroku.
-    * run in terminal:
-  
-      ```
-      heroku addons:create heroku-postgresql:hobby-dev
-      ```
-
-1. Push all of our local database data over to the new Heroku database.
-    * run in terminal *(replace `your_database` with the actual name of your database)*:
-    
-      ```
-      heroku pg:push your_database DATABASE_URL
-      ```
-    
-    * **DO NOT** replace `DATABASE_URL` with something else, just type: `DATABASE_URL`.
-
-### Pool Updates
+### pg.Pool Configuration
 
 To ensure that pool is going to work with the Heroku database we're going to need to abstract out the configuration to accept som custom settings in the event that the Heroku DB is being used instead of a local. If you already have a separate pool module then go-ahead and open it up, otherwise go ahead and create the module at `./server/modules/pool.js`. We're going to set it up so that the pool configuration is built off of the heroku `DATABASE_URL`.
 
@@ -156,6 +109,77 @@ Now you can import the pool module into any file that needs it:
 const pool = require('../modules/pool.js');
 ```
 
+Ensure these updates are committed to the repository.
+
+
+## Heroku Setup
+
+Run the following commands from within your project folder.
+
+1. In terminal, navigate to your project folder.
+    * run in terminal:
+    
+      ```
+      heroku create
+      ```
+
+1. Login in if prompted -- it might ask to open a browser
+1. Verify the the `heroku` remote has been added successfully
+    * run in terminal: 
+      
+      ```
+      git remote -v
+      ```
+
+    * You should see a heroku remote along with your origin remote
+
+Heroku will run by default `npm run build` and then `npm run start` in order to kick off your application every time you deploy. We have to make sure that both scripts are working as expected before deploying our code to Heroku. If you do not have a `build` script in place Heroku will not attempt to run it.
+
+
+## Heroku Deployment: Server and Client Deployment
+
+Ensure that all code changes have been committed to the local repository. With the code up to date and committed it can then be pushed to Heroku `master`:
+
+1. Use terminal in project directory to run:
+
+    ```
+    git push heroku master
+    ```
+
+    > Note: You'll need to commit and push each time you make a change that you want to deploy to Heroku. **Keep in mind you CAN NOT pull from Heroku. This is not a replacement for GitHub!**
+
+1. From the same terminal in the project directory run: 
+    
+    ```
+    heroku open
+    ```
+
+    > Note: It is best to fully test your code locally before deploying to Heroku. Bugs are much harder to troubleshoot on a live website.
+
+
+## Heroku Deployment: Database
+
+Our website is now live! However... we also have a database, so how do we get that deployed?
+
+
+### Postgresql on Heroku
+
+1. Create a **postgresql** database on Heroku.
+    * run in terminal:
+  
+      ```
+      heroku addons:create heroku-postgresql:hobby-dev
+      ```
+
+1. Push all of our local database data over to the new Heroku database.
+    * run in terminal *(replace `your_database` with the actual name of your database)*:
+    
+      ```
+      heroku pg:push your_database DATABASE_URL
+      ```
+    
+    * **DO NOT** replace `DATABASE_URL` with something else, just type: `DATABASE_URL`.
+
 Next, commit your changes and push them to Heroku:
 
 ```
@@ -170,6 +194,7 @@ Lastly, open terminal and type `heroku open`, which should show you your deploye
 
 > Note: It is best to fully test your code locally before deploying to Heroku. Bugs are much harder to troubleshoot on a live website.
 
+
 ### Miscellaneous
 
 - `heroku logs` - Display error logs
@@ -177,21 +202,22 @@ Lastly, open terminal and type `heroku open`, which should show you your deploye
 - `heroku restart` - Sometimes it helps to turn things off an on again
 - `heroku open` - Opens the website for you project in the browser
 
+
 ## Connecting Postico to your Heroku Database
 
 If you would like to edit your database, you can connect to your Heroku database directly from Postico. 
 
 1. In [your list of Heroku apps](https://dashboard.heroku.com/apps), select your application.
-2. Under `Resources` or in the `Configure Add-Ons` section, select `Heroku Postgres`.
-3. Select the `Settings` tab and click `View Credentials`
-4. Open Postico and select `New Favorite`.
-5. In the new Postico favorite, update the following to match Heroku:
-  - Host
-  - User
-  - Database
-  - Password
-  - Port
-6. Click `Connect` and you should have access to your database directly from Postico!
+1. Under `Resources` or in the `Configure Add-Ons` section, select `Heroku Postgres`.
+1. Select the `Settings` tab and click `View Credentials`
+1. Open Postico and select `New Favorite`.
+1. In the new Postico favorite, update the following to match Heroku:
+    - Host
+    - User
+    - Database
+    - Password
+    - Port
+1. Click `Connect` and you should have access to your database directly from Postico!
 
 
 ## GUI and Automatic Deployment
@@ -203,9 +229,10 @@ The [Heroku](https://www.heroku.com/) website GUI can simplify several of the st
 3. In the `Manual Deploy` section, click `Deploy Branch` to deploy for the first time.
 
 
-## Addition Heroku Info
+## Additional Heroku Info
 
 The following are some additional resources, information, etc... to help you in your Heroku journey.
+
 
 ### Miscellaneous Heroku CLI commands
 
@@ -213,6 +240,7 @@ The following are some additional resources, information, etc... to help you in 
 - `heroku config` - Show basic app info
 - `heroku restart` - Sometimes it helps to turn things off an on again
 - `heroku open` - Opens the website for you project in the browser
+
 
 ### Resources
 
