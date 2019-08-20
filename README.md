@@ -161,7 +161,7 @@ Run the following commands from within your project folder.
 
     * You should see a heroku remote along with your origin remote
 
-Heroku will run by default `npm run build` and then `npm run start` in order to kick off your application every time you deploy. We have to make sure that both scripts are working as expected before deploying our code to Heroku. If you do not have a `build` script in place Heroku will not attempt to run it.
+Heroku will run by default `npm run build` and then `npm run start` in order to kick off your application make sure these are setup as seen in the [Scripts](#scripts) section.
 
 
 ## Heroku Deployment: Server and Client Deployment
