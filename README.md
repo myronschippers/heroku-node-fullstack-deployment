@@ -22,6 +22,34 @@ The walkthrough that follows assumes you have already setup your Heroku account 
 The following alterations need to be made to your codebase in order to deploy to Heroku. Please make sure you have these in place before following any of the rest of the deployment notes.
 
 
+### Scripts
+
+Heroku will run by default `npm run build` and then `npm run start` in order to kick off your application every time you deploy. We have to make sure that both scripts are working as expected before deploying our code to Heroku. If you do not have a `build` script in place Heroku will not attempt to run it.
+
+1. In `package.json` as part of the `scripts` add `start` script:
+
+    ```JS
+    "scipts": {
+      ...
+      "start": "node server/server.js"
+    }
+    ```
+
+    > Note: the `server/server.js` path in the example is a sample and you should update that to be the path to the file that kicks off your node application
+
+1. If you have a bundler / complier in place add it as the `build` script:
+
+    ```JS
+    "scipts": {
+      ...
+      "start": "node server/server.js",
+      "build": "webpack --config webpack.config.js"
+    }
+    ```
+
+    > Note: we are showing the use of a webpack bundler in this example but the CLI command should be replaced by whatever you are using for your bundler
+
+
 ### Accepting Heroku PORT
 
 Make sure your PORT is configured correctly. This should be in your node server application kickoff file. In most cases it's a `server.js` file.
